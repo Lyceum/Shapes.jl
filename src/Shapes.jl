@@ -111,8 +111,8 @@ similar_type(::SA, ::SH) where {SA<:StaticArray,SH<:AbstractShape} =
 
 @init @require ElasticArrays="fdbdab4c-e67f-52f5-8c3f-e7b388dad3d4" begin
     import .ElasticArrays
-    ElasticArrays.ElasticArray(::UndefInitializer, shape::AbstractShape, dims::Dims) = ElasticArray{eltype(shape)}(undef, getdims(shape, dims)...)
-    ElasticArrays.ElasticArray(::UndefInitializer, shape::AbstractShape, dims::Integer...) = ElasticArray(undef, shape, dims)
+    ElasticArrays.ElasticArray(::UndefInitializer, shape::AbstractShape, dims::Dims) = ElasticArrays.ElasticArray{eltype(shape)}(undef, getdims(shape, dims)...)
+    ElasticArrays.ElasticArray(::UndefInitializer, shape::AbstractShape, dims::Integer...) = ElasticArrays.ElasticArray(undef, shape, dims)
 end
 
 
