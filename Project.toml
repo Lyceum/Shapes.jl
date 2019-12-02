@@ -4,17 +4,17 @@ authors = ["Colin Summers", "The Contributors of Shapes"]
 version = "0.1.1"
 
 [deps]
-StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+
+[compat]
+Requires = "0.5.2"
+StaticArrays = "0.12.1"
+julia = "1.1.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[compat]
-StaticArrays = "0.12.1"
-julia = "1.1.1"
-Requires = "0.5.2"
 
 [targets]
 test = ["Test"]
