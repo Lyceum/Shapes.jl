@@ -103,6 +103,7 @@ function check_dynamicsize(::Tuple)
     ))
 end
 
+Adapt.adapt_storage(T::DataType, sh::Shape{S}) where {S <: Tuple} = Shape{S,T}()
 
 
 struct MultiShape{S,T,N,L,namedtuple} <: AbstractShape{S,T,N,L}
@@ -183,3 +184,5 @@ end
         return :(throw(ArgumentError($msg)))
     end
 end
+
+@pure Adapt.adapt_storage(T::DataType, ::MS) where {MS <: MultiShape} = MultiShape(map(s->Adapt.adapt(T, s), get(MS)))

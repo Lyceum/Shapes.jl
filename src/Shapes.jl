@@ -1,5 +1,7 @@
 module Shapes
 
+import Adapt
+
 import Base: getindex, length, size
 using Base: @pure, @propagate_inbounds, @_inline_meta
 
