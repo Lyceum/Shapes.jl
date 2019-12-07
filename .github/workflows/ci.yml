@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request, repository_dispatch]
+on: [push, pull_request]
 
 jobs:
   test:
@@ -11,7 +11,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - ubuntu-16.04
           - macOS-latest
           - windows-latest
         julia-version:
@@ -31,4 +30,6 @@ jobs:
         shell: bash
       - uses: julia-actions/julia-buildpkg@master
       - uses: julia-actions/julia-runtest@master
+        env:
+          MUJOCOJL_TEST_KEY: ${{ secrets.MUJOCOJL_TEST_KEY }}
 
