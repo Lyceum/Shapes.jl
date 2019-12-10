@@ -1,56 +1,55 @@
-struct ShapedView{MS,D<:AbstractVector}
+struct ShapedView{SH,D<:AbstractVector}
     data::D
+    offset::Int
     Base.@propagate_inbounds function ShapedView(
         data::AbstractVector,
-        multishape::MultiShape,
+        offset::Int,
+        shape::AbstractShape,
     )
-        @boundscheck if length(data) != length(multishape)
-            error("length of `data` must be equal to the length of `multishape`")
-            Base.require_one_based_indexing(data)
-        end
-        new{multishape,typeof(data)}(data)
+        @boundscheck check_shapedview_args(data, offset, shape)
+        new{shape,typeof(data)}(data, offset)
     end
 end
 
+ShapedView(data::AbstractVector, shape::AbstractShape)  = ShapedView(data, 0, shape)
 (s::MultiShape)(data) = ShapedView(data, s)
 
-Base.getproperty(sv::ShapedView, name::Symbol) = getproperty(sv, Val(name))
-@generated function Base.getproperty(sv::ShapedView{MS}, ::Val{name}) where {MS,name}
+
+function Base.getproperty(sv::ShapedView{MS}, name::Symbol) where {MS}
     shape = getproperty(MS, name)
-    idxs = getindices(MS, name)
-    if shape isa ScalarShape
-        return quote
-            @_inline_meta
-            getfield(sv, :data)[$idxs]
-        end
-    elseif shape isa VectorShape
-        return quote
-            @_inline_meta
-            view(getfield(sv, :data), $idxs)
-        end
-    else
-        return quote
-            @_inline_meta
-            reshape(view(getfield(sv, :data), $idxs), $(size(shape)))
-        end
-    end
+    offset = getoffset(MS, name)
+    @inbounds ShapedView(getfield(sv, :data), offset, shape)
 end
 
-Base.setproperty!(sv::ShapedView, name::Symbol, val) = setproperty!(sv, Val(name), val)
-@generated function Base.setproperty!(
-    sv::ShapedView{MS},
-    ::Val{name},
-    val,
-) where {MS,name}
-    shape = getproperty(MS, name)
-    if shape isa ScalarShape
-        idxs = getindices(MS, name)
-        return quote
-            @_inline_meta
-            setindex!(getfield(sv, :data), val, $idxs)
-        end
-    else
-        msg = "Can only setproperty! on scalars, try ShapedView(data).shapename .= val (note the .=)"
-        return :(error($msg))
-    end
+
+function Base.getindex(sv::ShapedView{SH}) where {SH}
+    _getindex(getfield(sv, :data), getfield(sv, :offset), SH) # TODO @inbounds
+end
+
+@inline function _getindex(data::AbstractVector, offset::Int, shape::AbstractScalarShape)
+    data[offset + firstindex(data)]
+end
+@inline function _getindex(data::AbstractVector, offset::Int, shape::AbstractVectorShape)
+    view(data, (offset + firstindex(data)):(offset + length(shape)))
+end
+@inline function _getindex(data::AbstractVector, offset::Int, shape::AbstractShape)
+    reshape(view(data, (offset + firstindex(data)):(offset + length(shape))), size(shape))
+end
+
+
+function Base.setindex!(sv::ShapedView{SH}, val) where {SH}
+    data = getfield(sv, :data)
+    offset = getfield(sv, :offset)
+    _setindex(data, offset, SH, val) # TODO @inbounds
+end
+
+@inline function _setindex(data::AbstractVector, offset::Int, shape::ScalarShape, val)
+    setindex!(data, val, firstindex(data) + offset)
+end
+
+
+function check_shapedview_args(data::AbstractVector, offset::Int, shape::AbstractShape)
+    Base.require_one_based_indexing(data) # TODO, allow offset based indexing
+    checkbounds(data, offset + firstindex(data))
+    checkbounds(data, offset + length(shape))
 end

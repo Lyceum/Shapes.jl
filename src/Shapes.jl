@@ -33,7 +33,6 @@ export AbstractShape,
        concrete_eltype,
 
        ShapedView,
-       getindices,
        allocate
 
 
