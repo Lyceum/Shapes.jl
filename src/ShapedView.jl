@@ -17,7 +17,7 @@ ShapedView(data::AbstractVector, shape::AbstractShape)  = ShapedView(data, 0, sh
 
 function Base.getproperty(sv::ShapedView{MS}, name::Symbol) where {MS}
     shape = getproperty(MS, name)
-    offset = getoffset(MS, name)
+    offset = getfield(sv, :offset) + getoffset(MS, name)
     @inbounds ShapedView(getfield(sv, :data), offset, shape)
 end
 

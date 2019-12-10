@@ -31,5 +31,32 @@
 end
 
 @testset "nested" begin
+    s1 = MatrixShape(Real,5,10)
+    s2 = VectorShape(Float32,5)
+    s3 = ScalarShape(Int)
+    ms1 = MultiShape(s1 = s1, s2 = s2, s3=s3)
 
+    s4 = VectorShape(Float32,3)
+    s5 = ScalarShape(Int)
+    ms2 = MultiShape(s4=s4, s5=s5)
+
+    s6 = ScalarShape(Float64)
+    ms3 = MultiShape(s6=s6, ms2=ms2)
+
+    ms = MultiShape(ms1=ms1, ms2=ms2, ms3=ms3)
+
+    x = collect(1:length(ms))
+    sv = ms(x)
+
+    @test sv.ms1[] == 1:56
+    @test vec(sv.ms1.s1[]) == 1:50
+    @test vec(sv.ms1.s2[]) == 51:55
+    @test sv.ms1.s3[] == 56
+
+    @test vec(sv.ms2.s4[]) == 57:59
+    @test sv.ms2.s5[] == 60
+
+    @test sv.ms3.s6[] == 61
+    @test vec(sv.ms3.ms2.s4[]) == 62:64
+    @test sv.ms3.ms2.s5[] == 65
 end
