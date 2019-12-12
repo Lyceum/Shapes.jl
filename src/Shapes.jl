@@ -10,6 +10,8 @@ using Random: AbstractRNG
 
 using Requires: @init, @require
 
+import UnsafeArrays
+
 import StaticArrays: Size, Length, similar_type, get
 using StaticArrays: tuple_prod,
                     tuple_length,

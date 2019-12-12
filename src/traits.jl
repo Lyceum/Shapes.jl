@@ -1,8 +1,7 @@
 """
     abstract type AbstractShape{S, T, N, L} end
 
-The supertype for the various concrete shapes defined by `Shapes`. The type parameters
-exactly match those of [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl).
+The supertype for the various concrete shapes defined by `Shapes`. The,/StaticArrays.jl).
 The `S` parameter is a `Tuple`-type specifying the dimensions, or size, of the
 `AbstractShape`- such as `Tuple{3,4,5}` for a 3×4×5-sized array. The `T` parameter
 specifies the underlying data type of the shape (e.g. the element type for an array

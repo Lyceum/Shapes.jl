@@ -48,3 +48,8 @@ function default_datatype end
 @inline _default_datatype(::Type{>:Int}) = Int
 @inline _default_datatype(::Type{>:Float64}) = Float64
 @inline _default_datatype(::Type{>:Real}) = Float64
+
+has_unit_axes(A) = all(ax->ax isa AbstractUnitRange{Int}, axes(A))
+function check_has_unit_axes(A)
+    has_unit_axes(A) || throw(ArgumentError("The axes of data must be <: AbstractUnitRange{Int}"))
+end
