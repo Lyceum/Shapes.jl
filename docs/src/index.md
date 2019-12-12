@@ -92,7 +92,7 @@ shapedview.x = 10
 @assert shapedview.x == 10
 
 @assert shapedview.y == ydata
-@assert shapedview.y === reshape(view(flatdata, 2:length(flatdata)), size(yshape))
+@assert shapedview.y == reshape(view(flatdata, 2:length(flatdata)), size(yshape))
 
 # output
 

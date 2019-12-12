@@ -3,7 +3,8 @@ using Documenter, Shapes
 makedocs(;
     modules=[Shapes],
     format=Documenter.HTML(
-        prettyurls=get(ENV, "GITHUB_ACTIONS", nothing) == "true",
+        prettyurls = get(ENV, "GITHUB_ACTIONS", nothing) == "true",
+        canonical = "https://lyceum.github.io/Shapes.jl/stable/"
     ),
     pages=[
         "Home" => "index.md",
@@ -12,9 +13,9 @@ makedocs(;
     sitename="Shapes.jl",
     authors = "Colin Summers",
     clean = true,
-    doctest=true,
-    checkdocs=:all,
-    linkcheck=:true,
+    doctest = true,
+    checkdocs = :exports,
+    linkcheck = :true,
 )
 
 deploydocs(
