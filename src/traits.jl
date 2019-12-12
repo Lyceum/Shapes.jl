@@ -132,6 +132,7 @@ end
 MultiShape(nt::NamedTuple) = MultiShape{nt}()
 MultiShape(; shapes...) = MultiShape(values(shapes))
 MultiShape(ms::MultiShape; shapes...) = MultiShape(merge(NamedTuple(ms), shapes))
+MultiShape(shapes::Pair{Symbol, <:AbstractShape}...) = MultiShape(; shapes...)
 
 @pure get(::Type{SH}) where {SH<:MultiShape} = SH.parameters[end]
 get(ms::MultiShape) = get(typeof(ms))
