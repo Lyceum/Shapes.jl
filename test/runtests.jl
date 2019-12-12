@@ -56,6 +56,13 @@ using Shapes: concrete_eltype, ShapedView
         end
     end
 
-    @testset "ShapedView" begin include("ShapedView.jl") end
-
+    @testset "default_datatype" begin
+        @test @inferred(Shapes.default_datatype(Integer)) == Int
+        @test @inferred(Shapes.default_datatype(Int32)) == Int32
+        @test @inferred(Shapes.default_datatype(AbstractFloat)) == Float64
+        @test @inferred(Shapes.default_datatype(Real)) == Float64
+        @test @inferred(Shapes.default_datatype(Float32)) == Float32
+        @test @inferred(Shapes.default_datatype(Real)) == Float64
+        @test_throws ArgumentError Shapes.default_datatype(Complex)
+    end
 end

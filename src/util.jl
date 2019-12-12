@@ -43,11 +43,14 @@ e.g.
 """
 function default_datatype end
 
-@inline default_datatype(T::Type) = error("Type must be <: Real. Got $T.")
+@inline default_datatype(T::Type) = throw(ArgumentError("Type must be <: Real. Got $T."))
 @inline default_datatype(T::Type{<:Real}) = _default_datatype(T)
 @inline _default_datatype(::Type{>:Int}) = Int
 @inline _default_datatype(::Type{>:Float64}) = Float64
 @inline _default_datatype(::Type{>:Real}) = Float64
+@inline _default_datatype(T::Type) = T
+
+
 
 has_unit_axes(A) = all(ax->ax isa AbstractUnitRange{Int}, axes(A))
 function check_has_unit_axes(A)
