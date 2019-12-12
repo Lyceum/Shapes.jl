@@ -20,4 +20,5 @@ makedocs(;
 
 deploydocs(
     repo = "github.com/Lyceum/Shapes.jl.git",
+    push_preview = true
 )
