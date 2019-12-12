@@ -72,7 +72,9 @@ Shape{Tuple{3},Float64,1,3}()
 ## ShapedView
 
 Perhaps the most useful feature of Shapes.jl is `ShapedView`, which provides
-a structured view of flat numerical data:
+a structured view of flat numerical data. A `ShapedView{T,N,Shape} <: AbstractArray{T,N}` behaves
+just like a `AbstractArray{T,N}` of size equal to `size(Shape)`, but wraps a flat `Vector{T}`
+under the hood.
 
 ```jldoctest basic; output=false
 using Random
@@ -85,7 +87,8 @@ xdata = rand(xshape);
 ydata = rand(yshape);
 flatdata = [xdata, ydata...];
 
-shapedview = multishape(flatdata);
+shapedview = ShapedView(flatdata, multishape);
+# alternatively: shapedview = multishape(flatdata)
 
 @assert shapedview.x == xdata == flatdata[1]
 shapedview.x = 10
@@ -97,6 +100,33 @@ shapedview.x = 10
 # output
 
 ```
+
+Shapes can also be nested arbitraily:
+
+```jldoctest basic; output=false
+
+multishape = MultiShape(
+    a=VectorShape(Int, 5),
+    b=MatrixShape(Int, 10, 10),
+    c = MultiShape(
+        d = ScalarShape(Int),
+        e = VectorShape(Int, 15)
+    ),
+)
+
+flatdata = Float64.(collect(1:length(multishape)))
+shapedview = ShapedView(flatdata, multishape);
+
+@assert shapedview.a == 1:5
+@assert vec(shapedview.b) == 6:105
+@assert vec(shapedview.c) == 106:121
+@assert shapedview.c.d == 106
+@assert vec(shapedview.c.e) == 107:121
+
+# output
+
+```
+
 
 ```@meta
 DocTestSetup = nothing
