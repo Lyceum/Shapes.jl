@@ -1,8 +1,7 @@
 """
     abstract type AbstractShape{S, T, N, L} end
 
-The supertype for the various concrete shapes defined by `Shapes`. The type parameters
-exactly match those of [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl).
+The supertype for the various concrete shapes defined by `Shapes`. The,/StaticArrays.jl).
 The `S` parameter is a `Tuple`-type specifying the dimensions, or size, of the
 `AbstractShape`- such as `Tuple{3,4,5}` for a 3×4×5-sized array. The `T` parameter
 specifies the underlying data type of the shape (e.g. the element type for an array
@@ -11,6 +10,10 @@ Constructors may drop the `L` and `T` parameters if they are inferrable from the
 (e.g. `L` is always inferrable from `S`).
 """
 abstract type AbstractShape{S,T,N,L} end
+
+const AbstractScalarShape{T} = AbstractShape{Tuple{},T}
+const AbstractVectorShape{S,T} = AbstractShape{Tuple{S},T}
+const AbstractMatrixShape{S1,S2,T} = AbstractShape{Tuple{S1,S2},T}
 
 Size(::Type{SH}) where {SH<:AbstractShape{S}} where {S<:Tuple} = Size(S)
 Size(shape::SH) where {SH<:AbstractShape} = Size(SH)
@@ -41,9 +44,9 @@ Base.axes(::Type{SH}) where {SH<:AbstractShape} = _axes(Size(SH))
 @inline concrete_eltype(::Type{SH}) where {SH<:AbstractShape} = default_datatype(eltype(SH))
 @inline concrete_eltype(shape::AbstractShape) = concrete_eltype(typeof(shape))
 
-    #ScalarShape{T}     = AbstractShape{Tuple{}, T, 0}
-    #VectorShape{N,T}   = AbstractShape{Tuple{N}, T, 1}
-    #MatrixShape{N,M,T} = AbstractShape{Tuple{N,M}, T, 2}
+
+
+
 struct Shape{S,T,N,L} <: AbstractShape{S,T,N,L}
     function Shape{S,T,N,L}() where {S<:Tuple,T,N,L}
         check_shape_params(S, T, Val{N}, Val{L})
@@ -106,6 +109,8 @@ end
 Adapt.adapt_storage(T::DataType, sh::Shape{S}) where {S <: Tuple} = Shape{S,T}()
 
 
+
+# TODO unneccesary type params
 struct MultiShape{S,T,N,L,namedtuple} <: AbstractShape{S,T,N,L}
     function MultiShape{S,T,N,L,namedtuple}() where {S,T,N,L,namedtuple}
         check_multishape_params(S, T, Val{N}, Val{L}, Val{namedtuple})
@@ -138,14 +143,6 @@ Base.propertynames(ms::MultiShape) = propertynames(NamedTuple(ms))
 Base.values(ms::MultiShape) = values(NamedTuple(ms))
 Base.merge(ms1::MultiShape, ms2::MultiShape) = MultiShape(merge(NamedTuple(ms1), NamedTuple(ms2)))
 
-getindices(ms::MultiShape, shapename::Symbol) = computeidxsimpl(ms, shapename, getproperty(ms, shapename))
-function computeidxsimpl(ms::MultiShape, shapename::Symbol, shape::AbstractShape)
-    nt = get(ms)
-    shapeidx = Base.fieldindex(typeof(nt), shapename)
-    shapes = values(ms)
-    from = shapeidx == 1 ? 1 : 1 + sum(i -> length(shapes[i]), 1:(shapeidx-1))
-    ifelse(shape isa ScalarShape, from, from:(from+length(shape)-1))
-end
 
 @pure function namedtuple_length(nt::NamedTuple{<:Any,<:Tuple{Vararg{AbstractShape}}})
     sum(shape -> get(Length(shape)), values(nt))
@@ -186,3 +183,15 @@ end
 end
 
 @pure Adapt.adapt_storage(T::DataType, ::MS) where {MS <: MultiShape} = MultiShape(map(s->Adapt.adapt(T, s), get(MS)))
+
+@pure shapeindex(ms::MultiShape, name::Symbol) = Base.fieldindex(typeof(get(ms)), name)
+
+@pure Base.firstindex(ms::MultiShape) = firstindex(get(ms))
+@pure Base.lastindex(ms::MultiShape) = lastindex(get(ms))
+
+@pure Base.getindex(ms::MultiShape, i::Int) = getindex(get(ms), i)
+
+@pure function getoffset(ms::MultiShape, name::Symbol)
+    idx = shapeindex(ms, name)
+    idx == firstindex(ms) ? 0 : sum(i -> length(ms[i]), 1:(idx-1))
+end
