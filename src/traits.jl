@@ -45,20 +45,20 @@ Base.axes(::Type{SH}) where {SH<:AbstractShape} = _axes(Size(SH))
 @inline concrete_eltype(shape::AbstractShape) = concrete_eltype(typeof(shape))
 
 """
-    check_axes(shape::AbstractShape, A::AbstractArray)
+    checkaxes(shape::AbstractShape, A::AbstractArray)
 
 Throws an error if axes(shape) != axes(A).
 """
-@inline function check_axes(shape::AbstractShape, A::AbstractArray)
+@inline function checkaxes(shape::AbstractShape, A::AbstractArray)
     axes(A) == axes(shape) || throw(ArgumentError("axes(A) must be equal to axes(shape)"))
 end
 
 """
-    check_size(shape::AbstractShape, A::AbstractArray)
+    checksize(shape::AbstractShape, A::AbstractArray)
 
 Throws an error if size(shape) != size(A).
 """
-@inline function check_size(shape::AbstractShape, A::AbstractArray)
+@inline function checksize(shape::AbstractShape, A::AbstractArray)
     size(A) == size(shape) || throw(ArgumentError("size(A) must be equal to size(shape)"))
 end
 
