@@ -125,7 +125,7 @@ function UnsafeArrays.unsafe_uview(A::ShapedView{T,N,SH}) where {T,N,SH}
 end
 
 function check_offset_shape_inbounds(data::AbstractVector{T}, offset::Int, shape::AbstractShape{S,U,N}) where {T,S,U,N}
-    if !(0 <= offset < length(data))
+    if length(shape) > 0 && !(0 <= offset < length(data))
         throw(ArgumentError("offset must be in range [0, length(data))"))
     end
     if length(data) < offset + length(shape)
