@@ -65,4 +65,16 @@ using Shapes: concrete_eltype, ShapedView
         @test @inferred(Shapes.default_datatype(Real)) == Float64
         @test_throws ArgumentError Shapes.default_datatype(Complex)
     end
+
+    @testset "check size/axes" begin
+        A = rand(2,4,6)
+
+        @test @inferred(check_axes(Shape(Float64, 2, 4, 6), rand(2,4,6))) isa Bool
+        @test_throws ArgumentError check_axes(Shape(Float64, 2, 6, 6), rand(2,4,6)) isa Bool
+        @test_throws ArgumentError check_axes(Shape(Float64, 2, 6), rand(2,4,6)) isa Bool
+
+        @test @inferred(check_size(Shape(Float64, 2, 4, 6), rand(2,4,6))) isa Bool
+        @test_throws ArgumentError check_size(Shape(Float64, 2, 6, 6), rand(2,4,6)) isa Bool
+        @test_throws ArgumentError check_size(Shape(Float64, 2, 6), rand(2,4,6)) isa Bool
+    end
 end

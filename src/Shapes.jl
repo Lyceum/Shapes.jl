@@ -25,6 +25,8 @@ using StaticArrays: tuple_prod,
 
 
 export AbstractShape,
+       check_axes,
+       check_size,
        Shape,
        Size,
        Length,
