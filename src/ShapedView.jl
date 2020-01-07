@@ -13,21 +13,21 @@ struct ShapedView{T,N,SH,D<:AbstractVector{T}} <: DenseArray{T,N}
     end
 end
 
-function ShapedView{T,N,SH}(data, offset) where {T,N,SH}
+@propagate_inbounds function ShapedView{T,N,SH}(data, offset) where {T,N,SH}
     ShapedView{T,N,SH,typeof(data)}(data, offset)
 end
 
-function ShapedView(data::AbstractVector, offset::Int, shape::AbstractShape)
+@propagate_inbounds function ShapedView(data::AbstractVector, offset::Int, shape::AbstractShape)
     ShapedView{eltype(data), ndims(shape), shape, typeof(data)}(data, offset)
 end
 
-function ShapedView(data::AbstractVector, shape::AbstractShape)
+@propagate_inbounds function ShapedView(data::AbstractVector, shape::AbstractShape)
     ShapedView{eltype(data), ndims(shape), shape, typeof(data)}(data, 0)
 end
 
-ShapedView(data, shape) = ShapedView(data, 0, shape)
+@propagate_inbounds ShapedView(data, shape) = ShapedView(data, 0, shape)
 
-(s::AbstractShape)(data) = ShapedView(data, 0, s)
+@propagate_inbounds (shape::AbstractShape)(data) = ShapedView(data, 0, shape)
 
 
 @pure shapeof(::Type{SV}) where {T,N,SH,SV <: ShapedView{T,N,SH}} = SH
@@ -57,14 +57,14 @@ ShapedView(data, shape) = ShapedView(data, 0, shape)
 @pure Base.propertynames(::Type{SV}) where {SV <: ShapedView} = propertynames(shapeof(SV))
 @inline Base.propertynames(A::ShapedView) = propertynames(typeof(A))
 
-function Base.unsafe_convert(::Type{Ptr{T}}, A::ShapedView{T}) where {T}
+@inline function Base.unsafe_convert(::Type{Ptr{T}}, A::ShapedView{T}) where {T}
     Base.unsafe_convert(Ptr{T}, _data(A))
 end
 
-Base.dataids(A::ShapedView) = Base.dataids(_data(A))
+@inline Base.dataids(A::ShapedView) = Base.dataids(_data(A))
 
-function Base.copy(A::ShapedView{T,N,SH}) where {T,N,SH}
-    ShapedView{T,N,SH}(copy(_data(A)), _offset(A))
+@inline function Base.copy(A::ShapedView{T,N,SH}) where {T,N,SH}
+    @inbounds ShapedView{T,N,SH}(copy(_data(A)), _offset(A))
 end
 
 
