@@ -14,7 +14,6 @@ function bgroup!(suite_or_group, name, bench, std)
 end
 
 
-
 # Define a parent BenchmarkGroup to contain our suite
 suite = BenchmarkGroup()
 
@@ -22,13 +21,6 @@ suite["sv"] = BenchmarkGroup()
 bgroup!(suite["sv"], "vs_assign", sv_vs_assign()...)
 bgroup!(suite["sv"], "ms_assign", sv_ms_assign()...)
 bgroup!(suite["sv"], "ms_nested_assign", sv_ms_nested_assign()...)
-
-function run_benchmarks()
-    tune!(suite)
-    results = run(suite)
-    summarize_results(results)
-    results
-end
 
 summarize_results(suite_or_group) = summarize_results(suite_or_group, "")
 function summarize_results(suite_or_group, name)
@@ -56,3 +48,12 @@ function summarize_results(suite_or_group, name)
         end
     end
 end
+
+function run_benchmarks()
+    tune!(suite)
+    results = run(suite)
+    summarize_results(results)
+    results
+end
+
+run_benchmarks()
