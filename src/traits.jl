@@ -44,24 +44,48 @@ Base.axes(::Type{SH}) where {SH<:AbstractShape} = _axes(Size(SH))
 @inline concrete_eltype(::Type{SH}) where {SH<:AbstractShape} = default_datatype(eltype(SH))
 @inline concrete_eltype(shape::AbstractShape) = concrete_eltype(typeof(shape))
 
-"""
-    checkaxes(shape::AbstractShape, A::AbstractArray)
 
-Throws an error if axes(shape) != axes(A).
 """
-@inline function checkaxes(shape::AbstractShape, A::AbstractArray)
-    axes(A) == axes(shape) || throw(ArgumentError("axes(A) must be equal to axes(shape)"))
+    checkaxes(shape::AbstractShape, x)
+
+Throws an error if `axes(shape) != axes(x)``.
+"""
+@inline function checkaxes(shape::AbstractShape, x)
+    if !checkaxes(Bool, shape, x)
+        throw(DimensionMismatch("axes(x) must be equal to axes(shape)"))
+    end
 end
 
 """
-    checksize(shape::AbstractShape, A::AbstractArray)
+    checkaxes(Bool, shape::AbstractShape, x)
 
-Throws an error if size(shape) != size(A).
+Return `true` if `axes(shape) == axes(x)``.
 """
-@inline function checksize(shape::AbstractShape, A::AbstractArray)
-    size(A) == size(shape) || throw(ArgumentError("size(A) must be equal to size(shape)"))
+@inline function checkaxes(::Type{Bool}, shape::AbstractShape, x::AbstractArray)
+    axes(x) == axes(shape)
+end
+@inline checkaxes(::Type{Bool}, ::AbstractScalarShape, ::Number) = true
+
+"""
+    checksize(shape::AbstractShape, x)
+
+Throws an error if `size(shape) != size(x)`.
+"""
+@inline function checksize(shape::AbstractShape, x)
+    if !checksize(Bool, shape, x)
+        throw(DimensionMismatch("size(x) must be equal to size(shape)"))
+    end
 end
 
+"""
+    checksize(Bool, shape::AbstractShape, x)
+
+Return `true` if `size(shape) == size(x)`.
+"""
+@inline function checksize(::Type{Bool}, shape::AbstractShape, x::AbstractArray)
+    size(shape) == size(x)
+end
+@inline checksize(::Type{Bool}, ::AbstractScalarShape, ::Number) = true
 
 
 struct Shape{S,T,N,L} <: AbstractShape{S,T,N,L}
@@ -158,6 +182,7 @@ NamedTuple(::SH) where {SH<:MultiShape} = get(SH)
 
 Base.getproperty(ms::MultiShape, name::Symbol) = getfield(NamedTuple(ms), name)
 Base.propertynames(ms::MultiShape) = propertynames(NamedTuple(ms))
+Base.keys(ms::MultiShape) = keys(NamedTuple(ms))
 Base.values(ms::MultiShape) = values(NamedTuple(ms))
 Base.merge(ms1::MultiShape, ms2::MultiShape) = MultiShape(merge(NamedTuple(ms1), NamedTuple(ms2)))
 
