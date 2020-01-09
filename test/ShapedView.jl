@@ -2,9 +2,9 @@
     let A=rand(10)
         s1 = VectorShape(Float64, 10)
         s2 = VectorShape(Float64, 11)
-        @test_throws ArgumentError ShapedView(A, -1, s1)
-        @test_throws ArgumentError ShapedView(A, 11, s1)
-        @test_throws ArgumentError ShapedView(A, 0, s2)
+        @test_throws DimensionMismatch ShapedView(A, -1, s1)
+        @test_throws DimensionMismatch ShapedView(A, 11, s1)
+        @test_throws DimensionMismatch ShapedView(A, 0, s2)
     end
 
 

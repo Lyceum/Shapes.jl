@@ -24,6 +24,50 @@
           Float64
 end
 
+@testset "checkaxes" begin
+    @test @inferred(checkaxes(VectorShape(Float64, 2), rand(2))) === nothing
+    @test checkaxes(ScalarShape(Float64), 2) === nothing
+    @test_throws DimensionMismatch checkaxes(VectorShape(Float64, 2), rand(3))
+    @test_throws DimensionMismatch checkaxes(ScalarShape(Float64), rand(2))
+
+    @test_throws MethodError checkaxes(ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checkaxes(VectorShape(Float64, 2), "not an AbstractArray")
+    @test_throws MethodError checkaxes(ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checkaxes(VectorShape(Float64, 2), "not an AbstractArray")
+
+    @test @inferred(Bool, checkaxes(Bool, VectorShape(Float64, 2), rand(2))) == true
+    @test checkaxes(Bool, ScalarShape(Float64), 2) == true
+    @test checkaxes(Bool, VectorShape(Float64, 2), rand(3)) == false
+    @test checkaxes(Bool, ScalarShape(Float64), rand(2)) == false
+
+    @test_throws MethodError checkaxes(Bool, ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checkaxes(Bool, VectorShape(Float64, 2), "not an AbstractArray")
+    @test_throws MethodError checkaxes(Bool, ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checkaxes(Bool, VectorShape(Float64, 2), "not an AbstractArray")
+end
+
+@testset "checksize" begin
+    @test @inferred(checksize(VectorShape(Float64, 2), rand(2))) === nothing
+    @test checksize(ScalarShape(Float64), 2) === nothing
+    @test_throws DimensionMismatch checksize(VectorShape(Float64, 2), rand(3))
+    @test_throws DimensionMismatch checksize(ScalarShape(Float64), rand(2))
+
+    @test_throws MethodError checksize(ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checksize(VectorShape(Float64, 2), "not an AbstractArray")
+    @test_throws MethodError checksize(ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checksize(VectorShape(Float64, 2), "not an AbstractArray")
+
+    @test @inferred(Bool, checksize(Bool, VectorShape(Float64, 2), rand(2))) == true
+    @test checksize(Bool, ScalarShape(Float64), 2) == true
+    @test checksize(Bool, VectorShape(Float64, 2), rand(3)) == false
+    @test checksize(Bool, ScalarShape(Float64), rand(2)) == false
+
+    @test_throws MethodError checksize(Bool, ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checksize(Bool, VectorShape(Float64, 2), "not an AbstractArray")
+    @test_throws MethodError checksize(Bool, ScalarShape(Float64), "not a Number")
+    @test_throws MethodError checksize(Bool, VectorShape(Float64, 2), "not an AbstractArray")
+end
+
 @testset "MultiShape" begin
     s1 = MatrixShape{5,10,Real}()
     s2 = VectorShape{5,Float32}()
