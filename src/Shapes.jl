@@ -46,7 +46,7 @@ include("ShapedView.jl")
 
 
 getdims(shape::AbstractShape, dims) = getdims(Size(shape), dims)
-getdims(s::Size, dims) = ((get(s)..., dims...))
+getdims(s::Size, dims) = ((Tuple(s)..., dims...))
 getdims(::Size{()}, dims) = dims
 
 Base.Array{T}(::UndefInitializer, shape::AbstractShape, dims::Dims) where {T} =
@@ -101,7 +101,7 @@ _rand(T, dims::Dims) = rand(T, dims)
 
 # StaticArrays support
 similar_type(::Type{SH}) where {SH<:AbstractShape} =
-    SArray{tuple_to_size(get(Size(SH))),concrete_eltype(SH),ndims(SH),length(SH)}
+    SArray{tuple_to_size(Tuple(Size(SH))),concrete_eltype(SH),ndims(SH),length(SH)}
 similar_type(::SH) where {SH<:AbstractShape} = similar_type(SH)
 
 similar_type(::Type{SA}, ::Type{SH}) where {SA<:StaticArray,SH<:AbstractShape} =

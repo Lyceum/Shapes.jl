@@ -23,10 +23,10 @@ Length(shape::SH) where {SH<:AbstractShape} = Length(typeof(shape))
 
 Base.eltype(::Type{SH}) where {S<:Tuple,T,SH<:AbstractShape{S,T}} = T
 
-@pure Base.length(::Type{SH}) where {SH<:AbstractShape} = get(Length(SH))
+@pure Base.length(::Type{SH}) where {SH<:AbstractShape} = Int(Length(SH))
 @inline Base.length(shape::AbstractShape) = length(typeof(shape))
 
-@pure Base.size(::Type{SH}) where {SH<:AbstractShape} = get(Size(SH))
+@pure Base.size(::Type{SH}) where {SH<:AbstractShape} = Tuple(Size(SH))
 @inline function Base.size(T::Type{<:AbstractShape}, d::Int)
     S = size(T)
     d > length(S) ? 1 : S[d]
@@ -131,10 +131,10 @@ ScalarShape(T::Type) = Shape(T)
 VectorShape(T::Type, dim::Integer) = Shape(T, dim)
 MatrixShape(T::Type, d1::Integer, d2::Integer) = Shape(T, d1, d2)
 
-Shape(S::Size, T::Type) = Shape{tuple_to_size(get(S)),T}()
+Shape(S::Size, T::Type) = Shape{tuple_to_size(Tuple(S)),T}()
 Shape(::Type{A}) where {A<:AbstractArray} = Shape(Size(A), eltype(A))
 function Shape(A::AbstractArray)
-    size = get(Size(A))
+    size = Tuple(Size(A))
     check_dynamicsize(size)
     Shape{tuple_to_size(size),eltype(A)}()
 end
@@ -188,7 +188,7 @@ Base.merge(ms1::MultiShape, ms2::MultiShape) = MultiShape(merge(NamedTuple(ms1),
 
 
 @pure function namedtuple_length(nt::NamedTuple{<:Any,<:Tuple{Vararg{AbstractShape}}})
-    sum(shape -> get(Length(shape)), values(nt))
+    sum(shape -> Int(Length(shape)), values(nt))
 end
 
 @generated function check_multishape_namedtuple(::Type{Val{namedtuple}}) where {namedtuple}
