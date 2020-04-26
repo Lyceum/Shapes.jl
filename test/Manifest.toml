@@ -57,7 +57,7 @@ uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 deps = ["Adapt", "MacroTools", "Random", "Requires", "StaticArrays", "UnsafeArrays"]
 path = ".."
 uuid = "175de200-b73b-11e9-28b7-9b5b306cec37"
-version = "0.2.1"
+version = "0.2.2"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
@@ -85,6 +85,6 @@ deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [[UnsafeArrays]]
-git-tree-sha1 = "1de6ef280110c7ad3c5d2f7a31a360b57a1bde21"
+git-tree-sha1 = "9740b414f85ec2fa9135066f81b1fb14212befd6"
 uuid = "c4a57d5a-5b31-53a6-b365-19f8c011fbd6"
-version = "1.0.0"
+version = "1.0.1"
