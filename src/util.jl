@@ -1,58 +1,99 @@
+# For convenience
+const TupleN{T,N} = NTuple{N,T}
+
+
+# TODO For concrete type/eltype:
+#   - handle other types
+#   - check if isdefined
+#   - check if isconcretetype
 """
-    tuple_to_size(::Type{S}) where S<:Tuple
-Converts a tuple given by `(N, M, ...)` into `Tuple{N, M, ...}`.
+    $(SIGNATURES)
+
+Returns `T` if `T` is a concrete type, otherwise returns a default concrete type `U <: T`.
 """
-Base.@pure tuple_to_size(S::Tuple{Vararg{Int}}) = Tuple{S...}
+concrete_type(T::Type) = argerror("Only `T <: Real` is currently supported")
+concrete_type(T::Type{<:Real}) = _concrete_type(T)
+_concrete_type(::Type{>:Int}) = Int
+_concrete_type(::Type{>:Float64}) = Float64
+_concrete_type(::Type{>:Real}) = Float64
+_concrete_type(T::Type) = T
 
-# Copied (with modifications) from StaticArrays.jl
-@generated function check_shape_params(
-    ::Type{S},
-    ::Type{T},
-    ::Type{Val{N}},
-    ::Type{Val{L}},
-) where {S,T,N,L}
-    if !all(x -> isa(x, Int), S.parameters)
-        return :(throw(ArgumentError("Shapes parameter S must be a tuple of Ints (e.g. `Tuple{3,3}`")))
-    end
-
-    if L != tuple_prod(S) || L < 0 || tuple_minimum(S) < 0 || tuple_length(S) != N
-        return :(throw(ArgumentError("Size mismatch in Shapes parameters. Got size $S, dimension $N and length $L.")))
-    end
-
-    return nothing
-end
-
-@generated function promote_namedtuple_eltype(::Union{NT,Type{NT}}) where {NT<:NamedTuple}
-    #eltypes = map(eltype, shapes.parameters)
-    eltypes = Tuple(eltype(shape) for shape in NT.parameters[2].parameters)
-    T = promote_tuple_eltype(Tuple{eltypes...})
-    return quote
-        @_inline_meta
-        $T
-    end
-end
-
-
-# Copied from ValueShapes.jl
 """
-    Shapes.default_datatype(T::Type)
-Return a default specific type U that is more specific than T, with U <: T.
-e.g.
-    Shapes.default_datatype(Real) === Float64
-    Shapes.default_datatype(Integer) === Int
+    $(SIGNATURES)
+
+Returns `eltype(T)` if `eltype(T)` is a concrete type, else a default type `U <: eltype(T)`.
+
+See also: [`concrete_type`](@ref)
 """
-function default_datatype end
-
-@inline default_datatype(T::Type) = throw(ArgumentError("Type must be <: Real. Got $T."))
-@inline default_datatype(T::Type{<:Real}) = _default_datatype(T)
-@inline _default_datatype(::Type{>:Int}) = Int
-@inline _default_datatype(::Type{>:Float64}) = Float64
-@inline _default_datatype(::Type{>:Real}) = Float64
-@inline _default_datatype(T::Type) = T
+concrete_eltype(::Type{T}) where {T} = concrete_type(eltype(T))
 
 
+mapfoldl_recur_nt(f, op, t::NamedTuple) = mapfoldl(x -> mapfoldl_recur_nt(f, op, x), op, t)
+mapfoldl_recur_nt(f, op, x) = f(x)
 
+foldl_recur_nt(op, t::NamedTuple) = mapfoldl(identity, op, t)
+
+map_recur_nt(f, t::NamedTuple) = map(x -> map_recur_nt(f, x), t)
+map_recur_nt(f, x) = f(x)
+
+
+# TODO Base.require_one_based_indexing
 has_unit_axes(A) = all(ax->ax isa AbstractUnitRange{Int}, axes(A))
 function check_has_unit_axes(A)
     has_unit_axes(A) || throw(ArgumentError("The axes of data must be <: AbstractUnitRange{Int}"))
 end
+
+
+#maybe_promote_eltype(T::Type, shape::AbstractShape) = promote_type(T, eltype(shape)) #TODO test
+#maybe_promote_eltype(T::Type, x) = T
+
+
+####
+#### TODO Move the below to LyceumCore
+####
+
+argerror(msg::AbstractString) = throw(ArgumentError(msg))
+dimerror(msg::AbstractString) = throw(DimensionMismatch(msg))
+
+
+"""
+    $(SIGNATURES)
+
+Throws an error if the axes of `x` and `y` do not match.
+"""
+@inline function checkaxes(x, y)
+    if !checkaxes(Bool, x, y)
+        dimerror("Axes of $(typeof(x)) $(axes(x)) do not match axes of $(typeof(y)) $(axes(y))")
+    end
+end
+
+"""
+    $(SIGNATURES)
+
+Return `true` if the axes of `x` and `y` match.
+"""
+@inline checkaxes(::Type{Bool}, x, y) = axes(x) == axes(y)
+
+
+"""
+    $(SIGNATURES)
+
+Throws an error if the size of `x` and `y` do not match.
+"""
+@inline function checksize(x, y)
+    if !checksize(Bool, x, y)
+        dimerror("Size of $(typeof(x)) $(size(x)) do not match axes of $(typeof(y)) $(size(y))")
+    end
+end
+
+"""
+    $(SIGNATURES)
+
+Return `true` if the size of `x` and `y` match.
+"""
+@inline checksize(::Type{Bool}, x, y) = axes(x) == axes(y)
+
+
+@inline tuplecat(x) = x
+@inline tuplecat(x, y) = (x..., y...)
+@inline tuplecat(x, y, z...) = (x..., tuplecat(y, z...)...)

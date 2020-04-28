@@ -56,14 +56,14 @@ using Shapes: concrete_eltype, ShapedView
         end
     end
 
-    @testset "default_datatype" begin
-        @test @inferred(Shapes.default_datatype(Integer)) == Int
-        @test @inferred(Shapes.default_datatype(Int32)) == Int32
-        @test @inferred(Shapes.default_datatype(AbstractFloat)) == Float64
-        @test @inferred(Shapes.default_datatype(Real)) == Float64
-        @test @inferred(Shapes.default_datatype(Float32)) == Float32
-        @test @inferred(Shapes.default_datatype(Real)) == Float64
-        @test_throws ArgumentError Shapes.default_datatype(Complex)
+    @testset "concrete_type" begin
+        @test @inferred(Shapes.concrete_type(Integer)) == Int
+        @test @inferred(Shapes.concrete_type(Int32)) == Int32
+        @test @inferred(Shapes.concrete_type(AbstractFloat)) == Float64
+        @test @inferred(Shapes.concrete_type(Real)) == Float64
+        @test @inferred(Shapes.concrete_type(Float32)) == Float32
+        @test @inferred(Shapes.concrete_type(Real)) == Float64
+        @test_throws ArgumentError Shapes.concrete_type(Complex)
     end
 
 end
