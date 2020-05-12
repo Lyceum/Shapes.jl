@@ -57,7 +57,7 @@ uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 deps = ["Adapt", "MacroTools", "Random", "Requires", "StaticArrays", "UnsafeArrays"]
 path = ".."
 uuid = "175de200-b73b-11e9-28b7-9b5b306cec37"
-version = "0.2.3"
+version = "0.3.0-DEV"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
@@ -68,9 +68,9 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[StaticArrays]]
 deps = ["LinearAlgebra", "Random", "Statistics"]
-git-tree-sha1 = "4118cba3529e99af61aea9a83f7bfd3cff5ffb28"
+git-tree-sha1 = "5c06c0aeb81bef54aed4b3f446847905eb6cbda0"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "0.12.2"
+version = "0.12.3"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
