@@ -1,7 +1,7 @@
 name = "Shapes"
 uuid = "175de200-b73b-11e9-28b7-9b5b306cec37"
 authors = ["Colin Summers", "The Contributors of Shapes"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
@@ -12,7 +12,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 UnsafeArrays = "c4a57d5a-5b31-53a6-b365-19f8c011fbd6"
 
 [compat]
-Adapt = "1"
+Adapt = "1, 2.0"
 MacroTools = "0.5"
 Requires = "1"
 StaticArrays = "0.12.2"
