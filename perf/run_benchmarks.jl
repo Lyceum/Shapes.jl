@@ -1,4 +1,4 @@
-using Random, BenchmarkTools, UnsafeArrays, Statistics
+using Random, BenchmarkTools, Statistics
 using BenchmarkTools: prettytime, prettypercent
 
 push!(LOAD_PATH, joinpath(@__DIR__, ".."))

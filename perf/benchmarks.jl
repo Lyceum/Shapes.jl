@@ -30,7 +30,7 @@ function sv_ms_nested_assign()
 end
 
 function sv_ms_nested_assign_bench(dst, src)
-    @uviews dst src @inbounds begin
+    @inbounds begin
         dst.ms1.s1 .= src.ms1.s1
         dst.ms1.s2 .= src.ms1.s2
         dst.ms1.s3 = src.ms1.s3
@@ -45,7 +45,7 @@ function sv_ms_nested_assign_bench(dst, src)
 end
 
 function sv_ms_nested_assign_std(dst, src)
-    @uviews dst src @inbounds begin
+    @inbounds begin
         dst[1:50] .= view(src, 1:50)
         dst[51:55] .= view(src, 51:55)
         dst[56] = src[56]
@@ -81,7 +81,7 @@ function sv_ms_assign()
 end
 
 function sv_ms_assign_bench(src, dst)
-    @uviews dst src @inbounds begin
+    @inbounds begin
         dst.s1 .= src.s1
         dst.s2 .= src.s2
         dst.s3 = src.s3
@@ -89,7 +89,7 @@ function sv_ms_assign_bench(src, dst)
 end
 
 function sv_ms_assign_std(dst, src)
-    @uviews dst src @inbounds begin
+    @inbounds begin
         dst[1:50] .= view(src, 1:50)
         dst[51:65] .= view(src, 51:65)
         dst[66] = src[66]

@@ -119,11 +119,6 @@ end
     @inbounds setindex!(data, val, i)
 end
 
-
-function UnsafeArrays.unsafe_uview(A::ShapedView{T,N,SH}) where {T,N,SH}
-    @inbounds ShapedView{T,N,SH}(UnsafeArrays.unsafe_uview(_data(A)), _offset(A))
-end
-
 function check_offset_shape_inbounds(data::AbstractVector{T}, offset::Int, shape::AbstractShape{S,U,N}) where {T,S,U,N}
     if length(shape) > 0 && !(0 <= offset < length(data))
         throw(ArgumentError("offset must be in range [0, length(data))"))
